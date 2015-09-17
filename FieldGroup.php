@@ -34,12 +34,41 @@ abstract class FieldGroup
     $this->register($this->create());
   }
 
+  /**
+   * Returns the CPT for a given post type
+   */
+  static public function get_fieldgroup($type)
+  {
+    return isset(self::$fieldgroups[$type]) ? self::$fieldgroups[$type] : null;
+  }
 
-  public function add_keys($fields = array())
+  public function get_id()
+  {
+    return 'acf_' . $this->id;
+  }
+
+  public function get_fields()
+  {
+
+    $fields = array();
+
+    foreach ( $this->fields as $field) {
+      $field_object = get_field_object($field['name']);
+
+      $field_object['key'] = preg_replace('/^'.$this->id.'_/', '', $field_object['key']);
+
+      $fields[$field_object['key']] = $field_object['value'];
+    }
+
+    return $fields;
+  }
+
+  public function unique_keys($fields = array())
   {
 
     foreach ($fields as &$field) {
       $field['key'] = $this->id . '_' . $field['name'];
+      $field['name'] = $this->id . '_' . $field['name'];
     }
 
     return $fields;
@@ -49,7 +78,7 @@ abstract class FieldGroup
   public function register($fields)
   {
 
-    $this->fields = $this->add_keys($fields);
+    $this->fields = $this->unique_keys($fields);
 
     $defaults = array(
       'key' => 'acf_' . $this->id,
