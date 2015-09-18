@@ -69,6 +69,10 @@ abstract class FieldGroup
     foreach ($fields as &$field) {
       $field['key'] = $this->id . '_' . $field['name'];
       $field['name'] = $this->id . '_' . $field['name'];
+
+      if(isset($field['sub_fields'])){
+        $field['sub_fields'] = $this->unique_keys($field['sub_fields']);
+      }
     }
 
     return $fields;
