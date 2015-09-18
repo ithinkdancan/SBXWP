@@ -47,6 +47,11 @@ abstract class FieldGroup
     return 'acf_' . $this->id;
   }
 
+  public function clean_key($key)
+  {
+    return preg_replace('/^'.$this->id.'_/', '', $key);
+  }
+
   public function get_fields()
   {
 
@@ -55,7 +60,18 @@ abstract class FieldGroup
     foreach ( $this->fields as $field) {
       $field_object = get_field_object($field['name']);
 
-      $field_object['key'] = preg_replace('/^'.$this->id.'_/', '', $field_object['key']);
+      $field_object['key'] = $this->clean_key($field_object['key']);
+
+      //Clean up the subfields
+      if(is_array($field_object['value'])){
+          $field_object['value'] = array_map(function($tag) {
+            $subfields = array();
+            foreach ($tag as $key => $value) {
+              $subfields[$this->clean_key($key)] = $value;
+            }
+            return $subfields;
+          }, $field_object['value']);
+      }
 
       $fields[$field_object['key']] = $field_object['value'];
     }
