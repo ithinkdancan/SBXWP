@@ -52,6 +52,21 @@ abstract class FieldGroup
     return preg_replace('/^'.$this->id.'_/', '', $key);
   }
 
+  private function get_subfields($fields)
+  {
+
+  	return array_map(function($tag) {
+            $subfields = array();
+            foreach ($tag as $key => $value) {
+            	if(is_array($value)){
+            		$value = $this->get_subfields($value);
+            	}
+            	$subfields[$this->clean_key($key)] = $value;
+            }
+            return $subfields;
+          }, $fields);
+  }
+
   public function get_fields()
   {
 
@@ -64,13 +79,7 @@ abstract class FieldGroup
 
       //Clean up the subfields
       if(is_array($field_object['value'])){
-          $field_object['value'] = array_map(function($tag) {
-            $subfields = array();
-            foreach ($tag as $key => $value) {
-              $subfields[$this->clean_key($key)] = $value;
-            }
-            return $subfields;
-          }, $field_object['value']);
+          $field_object['value'] = $this->get_subfields($field_object['value']);
       }
 
       $fields[$field_object['key']] = $field_object['value'];
