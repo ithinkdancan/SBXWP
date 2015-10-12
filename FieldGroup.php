@@ -77,13 +77,13 @@ abstract class FieldGroup
           }, $fields);
   }
 
-  public function get_fields()
+  public function get_fields($post_id = null)
   {
 
     $fields = array();
 
     foreach ( $this->fields as $field) {
-      $field_object = get_field_object($field['name']);
+      $field_object = get_field_object($field['name'], $post_id);
 
       $field_object['key'] = $this->clean_key($field_object['key']);
 
