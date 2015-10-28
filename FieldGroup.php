@@ -77,6 +77,23 @@ abstract class FieldGroup
           }, $fields);
   }
 
+  public static function get_field($type, $field, $post_id = null)
+  {
+
+	if(isset(self::$fieldgroups[$type])){
+
+	 	$fg = self::$fieldgroups[$type];
+		$fields = $fg->get_fields($post_id);
+
+		if(isset($fields[$field])){
+			return $fields[$field];
+		}
+	}
+
+	return null;
+
+  }
+
   public function get_fields($post_id = null)
   {
 
